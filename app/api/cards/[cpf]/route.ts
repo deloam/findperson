@@ -1,7 +1,7 @@
 import { db } from '@vercel/postgres';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function PUT(request: Request, context: { params: { cpf: string } }) {
+export async function PUT(request: NextRequest, context: any) {
   try {
     const { cpf } = context.params;
     const { downloaded } = await request.json();
