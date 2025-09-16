@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 interface Params { cpf: string; }
 
-export async function PUT(request: NextRequest, context: { params: Params }) {
+export async function PUT(request: NextRequest, context: object) {
   try {
-    const { cpf } = context.params;
+    const { cpf } = (context as { params: { cpf: string } }).params;
     const { downloaded } = await request.json();
 
     if (typeof downloaded !== 'boolean') {
