@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import type { Person } from '@/lib/data'; // We can still use the type definition
 import Card from './Card';
 import AddCardModal from './AddCardModal';
+import { Box, Button, SimpleGrid, Text, Spinner, Alert, AlertIcon, Center, Flex } from '@chakra-ui/react';
 
 export default function CardDashboard() {
   const [cards, setCards] = useState<Person[]>([]);
@@ -82,23 +83,36 @@ export default function CardDashboard() {
   };
 
   if (isLoading) {
-    return <div className="text-center p-10">Carregando dados...</div>;
+    return (
+      <Center p={10}>
+        <Spinner size="xl" color="blue.500" />
+        <Text ml={4}>Carregando dados...</Text>
+      </Center>
+    );
   }
 
   if (error) {
-    return <div className="text-center p-10 text-red-500">Erro ao carregar dados: {error}</div>;
+    return (
+      <Alert status="error" p={10}>
+        <AlertIcon />
+        <Text>Erro ao carregar dados: {error}</Text>
+      </Alert>
+    );
   }
 
   return (
     <>
-      <div className="flex justify-end mb-8">
-        <button
+      <Flex justifyContent="flex-end" mb={8}>
+        <Button
           onClick={() => setIsModalOpen(true)}
-          className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-colors"
+          colorScheme="blue"
+          size="md"
+          shadow="md"
+          _hover={{ shadow: "lg" }}
         >
           Adicionar Novo Card
-        </button>
-      </div>
+        </Button>
+      </Flex>
 
       <AddCardModal 
         isOpen={isModalOpen}
@@ -106,9 +120,9 @@ export default function CardDashboard() {
         onAddCard={handleAddCard}
       />
 
-      <main
-        id="cards-container"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      <SimpleGrid 
+        columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} 
+        spacing={6}
       >
         {cards.map((person) => (
           <Card 
@@ -117,7 +131,7 @@ export default function CardDashboard() {
             onToggleDownloaded={handleToggleDownloaded} 
           />
         ))}
-      </main>
+      </SimpleGrid>
     </>
   );
 }

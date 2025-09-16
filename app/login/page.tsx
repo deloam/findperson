@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Box, Button, Center, FormControl, FormLabel, Heading, Input, Text } from '@chakra-ui/react';
 
 export default function LoginPage() {
   const [password, setPassword] = useState('');
@@ -24,7 +25,6 @@ export default function LoginPage() {
       });
 
       if (res.ok) {
-        // On success, Next.js router will redirect. We can prefetch the dashboard.
         router.push('/');
       } else {
         const data = await res.json();
@@ -38,33 +38,42 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center text-gray-700 mb-6">Acesso Restrito</h1>
+    <Center h="100vh">
+      <Box bg="white" p={8} borderRadius="lg" boxShadow="md" w="full" maxW="sm">
+        <Heading as="h1" size="lg" textAlign="center" mb={6} color="gray.700">
+          Acesso Restrito
+        </Heading>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-600 mb-2">
+          <FormControl mb={4}>
+            <FormLabel htmlFor="password" color="gray.600">
               Senha
-            </label>
-            <input
+            </FormLabel>
+            <Input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              borderColor="gray.300"
+              focusBorderColor="blue.500"
               required
             />
-          </div>
-          <button
+          </FormControl>
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-300"
+            isLoading={isLoading}
+            colorScheme="blue"
+            width="full"
+            mt={4}
           >
-            {isLoading ? 'Entrando...' : 'Entrar'}
-          </button>
-          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+            Entrar
+          </Button>
+          {error && (
+            <Text color="red.500" textAlign="center" mt={4}>
+              {error}
+            </Text>
+          )}
         </form>
-      </div>
-    </div>
+      </Box>
+    </Center>
   );
 }

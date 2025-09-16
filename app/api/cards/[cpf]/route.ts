@@ -7,7 +7,7 @@ export async function PUT(request: Request, { params }: { params: { cpf: string 
     const { downloaded } = await request.json();
 
     if (typeof downloaded !== 'boolean') {
-        return NextResponse.json({ message: 'Invalid 'downloaded' status' }, { status: 400 });
+        return NextResponse.json({ message: "Invalid 'downloaded' status" }, { status: 400 });
     }
 
     const result = await db.sql`

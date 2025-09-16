@@ -1,18 +1,19 @@
 import CardDashboard from "@/app/components/CardDashboard";
+import { Container, Heading, Text, Box } from '@chakra-ui/react';
 
 export default function HomePage() {
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <header className="text-center mb-10">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-700">
+    <Container maxW="container.xl" p={4} md={{ p: 8 }}>
+      <Box textAlign="center" mb={10}>
+        <Heading as="h1" size="xl" color="gray.700">
           Painel Eduardo
-        </h1>
-        <p className="text-md text-gray-500 mt-2">
+        </Heading>
+        <Text fontSize="md" color="gray.500" mt={2}>
           Dados organizados dos parentes.
-        </p>
-      </header>
+        </Text>
+      </Box>
 
       <CardDashboard />
-    </div>
+    </Container>
   );
 }

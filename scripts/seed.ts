@@ -1,5 +1,15 @@
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Replicate __dirname functionality in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+
 import { db } from '@vercel/postgres';
-import { clientData } from '../lib/data'; // Adjust path as needed
+import { clientData } from '../lib/data.ts';
 
 async function seedPeople() {
   try {
