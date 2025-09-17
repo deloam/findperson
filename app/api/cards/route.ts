@@ -31,11 +31,8 @@ export async function POST(request: NextRequest) {
     `;
 
     return NextResponse.json(result.rows[0], { status: 201 }); // objeto
-  } catch (error: any) {
-    console.error('Database Error:', error);
-    if (error.message.includes('duplicate key value violates unique constraint')) {
-      return NextResponse.json({ message: 'CPF already exists' }, { status: 409 });
-    }
+  } catch (error: unknown) {
+    console.error(error);
     return NextResponse.json({ message: 'Failed to create person' }, { status: 500 });
   }
 }
