@@ -1,137 +1,159 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import type { Person } from '@/lib/data'; // We can still use the type definition
+import { useEffect, useState } from 'react';
+import type { Person } from '@/lib/data';
+import {
+  Box,
+  SimpleGrid,
+  Heading,
+  Button,
+  useDisclosure,
+  Spinner,
+  Center,
+} from '@chakra-ui/react';
 import Card from './Card';
 import AddCardModal from './AddCardModal';
-import { Box, Button, SimpleGrid, Text, Spinner, Alert, AlertIcon, Center, Flex } from '@chakra-ui/react';
+import EditCardModal from './EditCardModal';
 
 export default function CardDashboard() {
   const [cards, setCards] = useState<Person[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [editingPerson, setEditingPerson] = useState<Person | null>(null);
 
+  const { isOpen: isAddOpen, onOpen: onOpenAdd, onClose: onCloseAdd } = useDisclosure();
+  const { isOpen: isEditOpen, onOpen: onOpenEdit, onClose: onCloseEdit } = useDisclosure();
+
+  const sortCards = (cardsArray: Person[]) =>
+    [...cardsArray].sort((a, b) => (b.isPrincipal ? 1 : 0) - (a.isPrincipal ? 1 : 0));
+
+  // Fetch inicial
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        setIsLoading(true);
-        const response = await fetch('/api/cards');
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        setCards(data);
-      } catch (err) {
-        setError(err.message);
+        const res = await fetch('/api/cards');
+        if (!res.ok) throw new Error('Erro ao carregar cards');
+        const data: Person[] = await res.json();
+        setCards(sortCards(data));
+      } catch (error) {
+        console.error(error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
-
     fetchCards();
   }, []);
 
-  const handleToggleDownloaded = async (cpf: string) => {
-    const card = cards.find(c => c.cpf === cpf);
-    if (!card) return;
-
-    const updatedStatus = !card.downloaded;
-
+  // Adicionar card
+  const handleAddCard = async (
+    newCard: Omit<Person, 'downloaded' | 'id' | 'createdAt'>
+  ) => {
     try {
-      const response = await fetch(`/api/cards/${cpf}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ downloaded: updatedStatus }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to update card');
-      }
-
-      const updatedCard = await response.json();
-      setCards(cards.map(c => (c.cpf === cpf ? updatedCard : c)));
-
-    } catch (err) {
-      // Here you might want to revert the optimistic update or show an error toast
-      console.error(err);
-    }
-  };
-
-  const handleAddCard = async (newCardData: Omit<Person, 'id' | 'downloaded' | 'createdAt'>) => {
-    try {
-      const response = await fetch('/api/cards', {
+      const res = await fetch('/api/cards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newCardData),
+        body: JSON.stringify(newCard),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to add card');
-      }
+      if (!res.ok) throw new Error('Erro ao adicionar card');
 
-      const newlyAddedCard = await response.json();
-      setCards([newlyAddedCard, ...cards]);
-      setIsModalOpen(false); // Close modal on success
-
-    } catch (err) {
-      console.error(err);
-      // Optionally, show an error message in the modal
+      const created: Person = await res.json();
+      setCards(sortCards([created, ...cards]));
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  if (isLoading) {
+  // Toggle downloaded
+  const handleToggleDownloaded = async (cpf: string) => {
+    try {
+      const person = cards.find((c) => c.cpf === cpf);
+      if (!person) return;
+
+      const res = await fetch(`/api/cards/${cpf}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ downloaded: !person.downloaded }),
+      });
+
+      if (!res.ok) throw new Error('Erro ao atualizar card');
+
+      const updated: Person = await res.json();
+      setCards(sortCards(cards.map((c) => (c.cpf === cpf ? updated : c))));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Deletar card
+  const handleDelete = async (cpf: string, password: string) => {
+    try {
+      const res = await fetch(`/api/cards/${cpf}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Erro ao deletar card');
+      }
+
+      setCards(cards.filter((c) => c.cpf !== cpf));
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert(error.message || 'Erro desconhecido');
+      } else {
+        alert('Erro desconhecido');
+      }
+    }
+  };
+
+  // Editar card
+  const handleEdit = (person: Person) => {
+    setEditingPerson(person);
+    onOpenEdit();
+  };
+
+  // Atualizar card após edição
+  const handleUpdateCard = (updated: Person) => {
+    setCards(sortCards(cards.map((c) => (c.cpf === updated.cpf ? updated : c))));
+  };
+
+  if (loading) {
     return (
-      <Center p={10}>
-        <Spinner size="xl" color="blue.500" />
-        <Text ml={4}>Carregando dados...</Text>
+      <Center h="60vh">
+        <Spinner size="xl" />
       </Center>
     );
   }
 
-  if (error) {
-    return (
-      <Alert status="error" p={10}>
-        <AlertIcon />
-        <Text>Erro ao carregar dados: {error}</Text>
-      </Alert>
-    );
-  }
-
   return (
-    <>
-      <Flex justifyContent="flex-end" mb={8}>
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          colorScheme="blue"
-          size="md"
-          shadow="md"
-          _hover={{ shadow: "lg" }}
-        >
-          Adicionar Novo Card
-        </Button>
-      </Flex>
+    <Box p={6}>
+      <Button colorScheme="blue" onClick={onOpenAdd} mb={6}>
+        Adicionar Novo
+      </Button>
 
-      <AddCardModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAddCard={handleAddCard}
-      />
-
-      <SimpleGrid 
-        columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} 
-        spacing={6}
-      >
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
         {cards.map((person) => (
-          <Card 
-            key={person.cpf} 
-            person={person} 
-            onToggleDownloaded={handleToggleDownloaded} 
+          <Card
+            key={person.cpf}
+            person={person}
+            onToggleDownloaded={handleToggleDownloaded}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
           />
         ))}
       </SimpleGrid>
-    </>
+
+      <AddCardModal isOpen={isAddOpen} onClose={onCloseAdd} onAddCard={handleAddCard} />
+      {editingPerson && (
+        <EditCardModal
+          isOpen={isEditOpen}
+          onClose={onCloseEdit}
+          person={editingPerson}
+          onUpdate={handleUpdateCard}
+        />
+      )}
+    </Box>
   );
 }

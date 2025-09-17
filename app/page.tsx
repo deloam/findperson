@@ -3,7 +3,7 @@ import { Container, Heading, Text, Box } from '@chakra-ui/react';
 
 export default function HomePage() {
   return (
-    <Container maxW="container.xl" p={4} md={{ p: 8 }}>
+    <Container maxW="container.xl" p={{ base: 4, md: 8 }}>
       <Box textAlign="center" mb={10}>
         <Heading as="h1" size="xl" color="gray.700">
           Painel Eduardo

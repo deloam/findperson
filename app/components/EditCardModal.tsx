@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import type { Person } from '@/lib/data';
 import {
   Modal,
@@ -14,18 +14,18 @@ import {
   Input,
   Button,
   Stack,
-  Box,
   Checkbox,
   ModalCloseButton,
 } from '@chakra-ui/react';
 
-interface AddCardModalProps {
+interface EditCardModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddCard: (newCard: Omit<Person, 'downloaded' | 'id' | 'createdAt'>) => void;
+  person: Person;
+  onUpdate: (updatedCard: Person) => void;
 }
 
-export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModalProps) {
+export default function EditCardModal({ isOpen, onClose, person, onUpdate }: EditCardModalProps) {
   const [formData, setFormData] = useState({
     nome: '',
     cpf: '',
@@ -36,34 +36,55 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
     isPrincipal: false,
   });
 
+  useEffect(() => {
+    if (person) {
+      setFormData({
+        nome: person.nome,
+        cpf: person.cpf,
+        parentesco: person.parentesco,
+        mae: person.mae || '',
+        nascimento: person.nascimento || '',
+        profissao: person.profissao || '',
+        isPrincipal: person.isPrincipal,
+      });
+    }
+  }, [person]);
+
   if (!isOpen) return null;
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    onAddCard(formData);
-    onClose(); // Close modal after submission
-    // Reset form for next time
-    setFormData({
-      nome: '',
-      cpf: '',
-      parentesco: '',
-      mae: '',
-      nascimento: '',
-      profissao: '',
-      isPrincipal: false,
-    });
+
+    try {
+      const res = await fetch(`/api/cards/${person.cpf}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, downloaded: person.downloaded }),
+      });
+
+      if (!res.ok) throw new Error('Erro ao atualizar card');
+
+      const updated: Person = await res.json();
+      onUpdate(updated);
+      onClose();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Adicionar Nova Pessoa<ModalCloseButton /></ModalHeader>
+        <ModalHeader>
+          Editar Card
+          <ModalCloseButton />
+        </ModalHeader>
         <ModalBody>
-          <form onSubmit={handleSubmit} id="add-card-form">
+          <form id="edit-card-form" onSubmit={handleSubmit}>
             <Stack spacing={4}>
               <FormControl isRequired>
-                <FormLabel htmlFor="nome">Nome Completo</FormLabel>
+                <FormLabel htmlFor="nome">Nome</FormLabel>
                 <Input
                   id="nome"
                   value={formData.nome}
@@ -128,8 +149,8 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
           <Button variant="ghost" onClick={onClose} mr={3}>
             Cancelar
           </Button>
-          <Button colorScheme="blue" type="submit" form="add-card-form">
-            Adicionar
+          <Button colorScheme="blue" type="submit" form="edit-card-form">
+            Salvar
           </Button>
         </ModalFooter>
       </ModalContent>
