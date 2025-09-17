@@ -74,24 +74,28 @@ export async function PUT(
     `;
 
     // Handle telefones: Delete existing and insert new ones
-    await db.sql`DELETE FROM telefones WHERE person_id = ${personId};`;
-    if (telefones && Array.isArray(telefones) && telefones.length > 0) {
-      for (const tel of telefones) {
-        await db.sql`
-          INSERT INTO telefones (person_id, numero, tipo)
-          VALUES (${personId}, ${tel.numero}, ${tel.tipo || null});
-        `;
+    if ('telefones' in body) {
+      await db.sql`DELETE FROM telefones WHERE person_id = ${personId};`;
+      if (telefones && Array.isArray(telefones) && telefones.length > 0) {
+        for (const tel of telefones) {
+          await db.sql`
+            INSERT INTO telefones (person_id, numero, tipo)
+            VALUES (${personId}, ${tel.numero}, ${tel.tipo || null});
+          `;
+        }
       }
     }
 
     // Handle enderecos: Delete existing and insert new ones
-    await db.sql`DELETE FROM enderecos WHERE person_id = ${personId};`;
-    if (enderecos && Array.isArray(enderecos) && enderecos.length > 0) {
-      for (const end of enderecos) {
-        await db.sql`
-          INSERT INTO enderecos (person_id, logradouro, numero, bairro, cidade, uf, cep)
-          VALUES (${personId}, ${end.logradouro}, ${end.numero || null}, ${end.bairro || null}, ${end.cidade}, ${end.uf}, ${end.cep || null});
-        `;
+    if ('enderecos' in body) {
+      await db.sql`DELETE FROM enderecos WHERE person_id = ${personId};`;
+      if (enderecos && Array.isArray(enderecos) && enderecos.length > 0) {
+        for (const end of enderecos) {
+          await db.sql`
+            INSERT INTO enderecos (person_id, logradouro, numero, bairro, cidade, uf, cep)
+            VALUES (${personId}, ${end.logradouro}, ${end.numero || null}, ${end.bairro || null}, ${end.cidade}, ${end.uf}, ${end.cep || null});
+          `;
+        }
       }
     }
 
