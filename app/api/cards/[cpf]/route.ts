@@ -1,12 +1,11 @@
 import { db } from '@vercel/postgres';
 import { NextRequest, NextResponse } from 'next/server';
 
-interface Params {
-  cpf: string;
-}
-
 // GET - Buscar pessoa pelo CPF
-export async function GET(request: NextRequest, { params }: { params: Params }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { cpf: string } }
+) {
   const { cpf } = params;
   try {
     const { rows } = await db.sql`SELECT * FROM people WHERE cpf = ${cpf};`;
@@ -21,7 +20,10 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
 }
 
 // PUT - Atualizar pessoa pelo CPF
-export async function PUT(request: NextRequest, { params }: { params: Params }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { cpf: string } }
+) {
   const { cpf } = params;
   try {
     const body = await request.json();
@@ -57,7 +59,10 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
 }
 
 // DELETE - Deletar pessoa pelo CPF (requere senha)
-export async function DELETE(request: NextRequest, { params }: { params: Params }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { cpf: string } }
+) {
   const { cpf } = params;
   try {
     const body = await request.json();
