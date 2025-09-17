@@ -4,9 +4,11 @@ import { NextRequest, NextResponse } from 'next/server';
 // GET - Buscar pessoa pelo CPF
 export async function GET(
   request: NextRequest,
-  { params }: { params: { cpf: string } }
+  context: { params: Promise<{ cpf: string }> }
 ) {
+  const params = await context.params;
   const { cpf } = params;
+  
   try {
     const { rows } = await db.sql`SELECT * FROM people WHERE cpf = ${cpf};`;
     if (rows.length === 0) {
@@ -22,9 +24,11 @@ export async function GET(
 // PUT - Atualizar pessoa pelo CPF
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { cpf: string } }
+  context: { params: Promise<{ cpf: string }> }
 ) {
+  const params = await context.params;
   const { cpf } = params;
+  
   try {
     const body = await request.json();
 
@@ -61,9 +65,11 @@ export async function PUT(
 // DELETE - Deletar pessoa pelo CPF (requere senha)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { cpf: string } }
+  context: { params: Promise<{ cpf: string }> }
 ) {
+  const params = await context.params;
   const { cpf } = params;
+  
   try {
     const body = await request.json();
 
