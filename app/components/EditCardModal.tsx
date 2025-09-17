@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import type { Person } from '@/lib/data';
 import {
   Modal,
@@ -20,12 +20,12 @@ import {
 
 interface EditCardModalProps {
   isOpen: boolean;
-  onClose: () => void;
   person: Person;
-  onUpdate: (updatedCard: Person) => void;
+  onClose: () => void;
+  onUpdate: (updated: Person) => void;
 }
 
-export default function EditCardModal({ isOpen, onClose, person, onUpdate }: EditCardModalProps) {
+export default function EditCardModal({ isOpen, person, onClose, onUpdate }: EditCardModalProps) {
   const [formData, setFormData] = useState({
     nome: '',
     cpf: '',
@@ -69,6 +69,7 @@ export default function EditCardModal({ isOpen, onClose, person, onUpdate }: Edi
       onClose();
     } catch (error) {
       console.error(error);
+      alert('Erro ao atualizar');
     }
   };
 
@@ -144,14 +145,9 @@ export default function EditCardModal({ isOpen, onClose, person, onUpdate }: Edi
             </Stack>
           </form>
         </ModalBody>
-
         <ModalFooter>
-          <Button variant="ghost" onClick={onClose} mr={3}>
-            Cancelar
-          </Button>
-          <Button colorScheme="blue" type="submit" form="edit-card-form">
-            Salvar
-          </Button>
+          <Button variant="ghost" onClick={onClose} mr={3}>Cancelar</Button>
+          <Button colorScheme="blue" type="submit" form="edit-card-form">Salvar</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

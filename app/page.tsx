@@ -1,5 +1,5 @@
 import CardDashboard from "@/app/components/CardDashboard";
-import { Container, Heading, Text, Box } from '@chakra-ui/react';
+import { Container, Box, Heading, Text } from "@chakra-ui/react";
 
 export default function HomePage() {
   return (
@@ -13,7 +13,10 @@ export default function HomePage() {
         </Text>
       </Box>
 
-      <CardDashboard />
+      {/* Grid wrapper com w-full */}
+      <Box w="full">
+        <CardDashboard />
+      </Box>
     </Container>
   );
 }
