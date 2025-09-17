@@ -5,89 +5,80 @@ interface Params {
   cpf: string;
 }
 
-// GET → retorna 1 objeto
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Params }
-) {
+// GET - Buscar pessoa pelo CPF
+export async function GET(request: NextRequest, { params }: { params: Params }) {
+  const { cpf } = params;
   try {
-    const { cpf } = params;
-
-    const result = await db.sql`
-      SELECT * FROM people WHERE cpf = ${cpf};
-    `;
-
-    if (result.rowCount === 0) {
-      return NextResponse.json({ message: 'Person not found' }, { status: 404 });
+    const { rows } = await db.sql`SELECT * FROM people WHERE cpf = ${cpf};`;
+    if (rows.length === 0) {
+      return NextResponse.json({ message: 'Pessoa não encontrada' }, { status: 404 });
     }
-
-    return NextResponse.json(result.rows[0]); // objeto
-  } catch (error) {
-    console.error('Database Error:', error);
-    return NextResponse.json({ message: 'Failed to fetch person' }, { status: 500 });
+    return NextResponse.json(rows[0]);
+  } catch (error: unknown) {
+    console.error('GET Error:', error);
+    return NextResponse.json({ message: 'Erro ao buscar pessoa' }, { status: 500 });
   }
 }
 
-// PUT → atualiza e retorna 1 objeto
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Params }
-) {
+// PUT - Atualizar pessoa pelo CPF
+export async function PUT(request: NextRequest, { params }: { params: Params }) {
+  const { cpf } = params;
   try {
-    const { cpf } = params;
-    const { downloaded } = await request.json();
+    const body = await request.json();
 
-    if (typeof downloaded !== 'boolean') {
-      return NextResponse.json(
-        { message: "Invalid 'downloaded' status" },
-        { status: 400 }
-      );
+    // Validar downloaded se presente
+    if ('downloaded' in body && typeof body.downloaded !== 'boolean') {
+      return NextResponse.json({ message: "'downloaded' inválido" }, { status: 400 });
     }
 
     const result = await db.sql`
       UPDATE people
-      SET downloaded = ${downloaded}
+      SET 
+        nome = COALESCE(${body.nome}, nome),
+        parentesco = COALESCE(${body.parentesco}, parentesco),
+        mae = COALESCE(${body.mae}, mae),
+        nascimento = COALESCE(${body.nascimento}, nascimento),
+        profissao = COALESCE(${body.profissao}, profissao),
+        "isPrincipal" = COALESCE(${body.isPrincipal}, "isPrincipal"),
+        downloaded = COALESCE(${body.downloaded}, downloaded)
       WHERE cpf = ${cpf}
       RETURNING *;
     `;
 
     if (result.rowCount === 0) {
-      return NextResponse.json({ message: 'Person not found' }, { status: 404 });
+      return NextResponse.json({ message: 'Pessoa não encontrada' }, { status: 404 });
     }
 
-    return NextResponse.json(result.rows[0]); // objeto
-  } catch (error) {
-    console.error('Database Error:', error);
-    return NextResponse.json({ message: 'Failed to update person' }, { status: 500 });
+    return NextResponse.json(result.rows[0]);
+  } catch (error: unknown) {
+    console.error('PUT Error:', error);
+    return NextResponse.json({ message: 'Erro ao atualizar pessoa' }, { status: 500 });
   }
 }
 
-// DELETE → remove e retorna 1 objeto (ou mensagem)
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Params }
-) {
+// DELETE - Deletar pessoa pelo CPF (requere senha)
+export async function DELETE(request: NextRequest, { params }: { params: Params }) {
+  const { cpf } = params;
   try {
-    const { cpf } = params;
     const body = await request.json();
-    const { password } = body;
 
-    if (!password || password !== process.env.ADMIN_PASSWORD) {
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) {
+      return NextResponse.json({ message: 'Senha de administrador não configurada' }, { status: 500 });
+    }
+
+    if (!body.password || body.password !== adminPassword) {
       return NextResponse.json({ message: 'Senha incorreta' }, { status: 401 });
     }
 
-    const result = await db.sql`
-      DELETE FROM people WHERE cpf = ${cpf} RETURNING *;
-    `;
-
+    const result = await db.sql`DELETE FROM people WHERE cpf = ${cpf} RETURNING *;`;
     if (result.rowCount === 0) {
-      return NextResponse.json({ message: 'Person not found' }, { status: 404 });
+      return NextResponse.json({ message: 'Pessoa não encontrada' }, { status: 404 });
     }
 
-    return NextResponse.json(result.rows[0]); // objeto deletado
-  } catch (error) {
-    console.error('Database Error:', error);
-    return NextResponse.json({ message: 'Failed to delete person' }, { status: 500 });
+    return NextResponse.json({ message: 'Pessoa deletada com sucesso' });
+  } catch (error: unknown) {
+    console.error('DELETE Error:', error);
+    return NextResponse.json({ message: 'Erro ao deletar pessoa' }, { status: 500 });
   }
 }
-
