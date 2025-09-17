@@ -30,7 +30,7 @@ export default function LoginPage() {
         const data = await res.json();
         setError(data.message || 'Senha incorreta.');
       }
-    } catch (error) {
+    } catch {
       setError('Não foi possível conectar ao servidor.');
     }
 
