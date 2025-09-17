@@ -14,7 +14,7 @@ import { clientData } from '../lib/data.ts';
 async function seedPeople() {
   try {
     // Create the "people" table if it doesn't exist
-    const createTable = await db.sql`
+    await db.sql`
       CREATE TABLE IF NOT EXISTS people (
         id SERIAL PRIMARY KEY,
         nome VARCHAR(255) NOT NULL,
@@ -30,22 +30,72 @@ async function seedPeople() {
     `;
     console.log(`Created "people" table`);
 
-    // Insert data into the "people" table
-    const insertedPeople = await Promise.all(
-      clientData.map(async (person) => {
-        return db.sql`
-          INSERT INTO people (nome, cpf, parentesco, mae, nascimento, profissao, "isPrincipal", downloaded)
-          VALUES (${person.nome}, ${person.cpf}, ${person.parentesco}, ${person.mae}, ${person.nascimento}, ${person.profissao}, ${person.isPrincipal}, ${person.downloaded})
-          ON CONFLICT (cpf) DO NOTHING; -- Do not insert if CPF already exists
-        `;
-      }),
-    );
+    // Create the "telefones" table if it doesn't exist
+    await db.sql`
+      CREATE TABLE IF NOT EXISTS telefones (
+          id SERIAL PRIMARY KEY,
+          person_id INTEGER NOT NULL REFERENCES people(id) ON DELETE CASCADE,
+          numero VARCHAR(50) NOT NULL,
+          tipo VARCHAR(50)
+      );
+    `;
+    console.log(`Created "telefones" table`);
 
-    console.log(`Seeded ${insertedPeople.length} people`);
+    // Create the "enderecos" table if it doesn't exist
+    await db.sql`
+      CREATE TABLE IF NOT EXISTS enderecos (
+          id SERIAL PRIMARY KEY,
+          person_id INTEGER NOT NULL REFERENCES people(id) ON DELETE CASCADE,
+          logradouro VARCHAR(255) NOT NULL,
+          numero VARCHAR(50),
+          bairro VARCHAR(255),
+          cidade VARCHAR(255) NOT NULL,
+          uf VARCHAR(2) NOT NULL,
+          cep VARCHAR(10)
+      );
+    `;
+    console.log(`Created "enderecos" table`);
+
+    // Insert data into the "people" table and related tables
+    for (const person of clientData) {
+      const { rows: [insertedPerson] } = await db.sql`
+        INSERT INTO people (nome, cpf, parentesco, mae, nascimento, profissao, "isPrincipal", downloaded)
+        VALUES (${person.nome}, ${person.cpf}, ${person.parentesco}, ${person.mae}, ${person.nascimento}, ${person.profissao}, ${person.isPrincipal}, ${person.downloaded})
+        ON CONFLICT (cpf) DO UPDATE SET
+          nome = EXCLUDED.nome,
+          parentesco = EXCLUDED.parentesco,
+          mae = EXCLUDED.mae,
+          nascimento = EXCLUDED.nascimento,
+          profissao = EXCLUDED.profissao,
+          "isPrincipal" = EXCLUDED."isPrincipal",
+          downloaded = EXCLUDED.downloaded
+        RETURNING id;
+      `;
+      const personId = insertedPerson.id;
+
+      if (person.telefones && person.telefones.length > 0) {
+        for (const telefone of person.telefones) {
+          await db.sql`
+            INSERT INTO telefones (person_id, numero, tipo)
+            VALUES (${personId}, ${telefone.numero}, ${telefone.tipo});
+          `;
+        }
+      }
+
+      if (person.enderecos && person.enderecos.length > 0) {
+        for (const endereco of person.enderecos) {
+          await db.sql`
+            INSERT INTO enderecos (person_id, logradouro, numero, bairro, cidade, uf, cep)
+            VALUES (${personId}, ${endereco.logradouro}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}, ${endereco.uf}, ${endereco.cep});
+          `;
+        }
+      }
+    }
+
+    console.log(`Seeded ${clientData.length} people and their related data.`);
 
     return {
-      createTable,
-      seededPeople: insertedPeople,
+      seededPeople: clientData.length,
     };
   } catch (error) {
     console.error('Error seeding people:', error);

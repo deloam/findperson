@@ -4,8 +4,19 @@ import { useState, useEffect } from 'react';
 import type { Person } from '@/lib/data';
 import Card from './Card';
 import AddCardModal from './AddCardModal';
-import EditCardModal from './EditCardModal';
-import { Button, Flex, Box } from '@chakra-ui/react';
+import EditCardModal from './EditCardModal'; // Assuming this component exists or will be created
+import {
+  Button,
+  Flex,
+  Box,
+  SimpleGrid, // For the grid layout
+  Spinner,    // For loading state
+  Alert,      // For error state
+  AlertIcon,  // For error state
+  Center,     // For centering loading/error
+  Text,       // For loading/error messages
+  useToast,   // For notifications
+} from '@chakra-ui/react';
 
 export default function CardDashboard() {
   const [cards, setCards] = useState<Person[]>([]);
@@ -13,6 +24,7 @@ export default function CardDashboard() {
   const [editPerson, setEditPerson] = useState<Person | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast(); // Initialize useToast
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -27,6 +39,13 @@ export default function CardDashboard() {
         setCards(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro desconhecido');
+        toast({
+          title: 'Erro ao carregar dados.',
+          description: err instanceof Error ? err.message : 'Erro desconhecido.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -38,16 +57,32 @@ export default function CardDashboard() {
     const card = cards.find(c => c.cpf === cpf);
     if (!card) return;
     try {
-      const res = await fetch(`/api/cards/${cpf}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ downloaded: !card.downloaded }),
-      });
+      const res = await fetch(`/api/cards/${cpf}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ downloaded: !card.downloaded }),
+        }
+      );
+
       if (!res.ok) throw new Error('Erro ao atualizar card');
       const updated = await res.json();
       setCards(cards.map(c => (c.cpf === cpf ? updated : c)));
+      toast({
+        title: 'Card atualizado.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
     } catch (err) {
       console.error(err);
+      toast({
+        title: 'Erro ao atualizar card.',
+        description: err instanceof Error ? err.message : 'Erro desconhecido.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -58,20 +93,63 @@ export default function CardDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newCard),
       });
-      if (!res.ok) throw new Error('Erro ao adicionar card');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Erro ao adicionar card');
+      }
       const added = await res.json();
       setCards([added, ...cards]);
       setIsModalOpen(false);
+      toast({
+        title: 'Pessoa adicionada.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
     } catch (err) {
       console.error(err);
+      toast({
+        title: 'Erro ao adicionar pessoa.',
+        description: err instanceof Error ? err.message : 'Erro desconhecido.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   const handleEdit = (person: Person) => setEditPerson(person);
 
-  const handleUpdate = (updated: Person) => {
-    setCards(cards.map(c => (c.cpf === updated.cpf ? updated : c)));
-    setEditPerson(null);
+  const handleUpdate = async (updatedPerson: Person) => {
+    try {
+      const res = await fetch(`/api/cards/${updatedPerson.cpf}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedPerson),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Erro ao atualizar pessoa');
+      }
+      const updated = await res.json();
+      setCards(cards.map(c => (c.cpf === updated.cpf ? updated : c)));
+      setEditPerson(null);
+      toast({
+        title: 'Pessoa atualizada.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: 'Erro ao atualizar pessoa.',
+        description: err instanceof Error ? err.message : 'Erro desconhecido.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleDelete = async (cpf: string) => {
@@ -90,21 +168,48 @@ export default function CardDashboard() {
         return;
       }
       setCards(cards.filter(c => c.cpf !== cpf));
+      toast({
+        title: 'Pessoa deletada.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
     } catch (err) {
       console.error(err);
-      alert('Erro ao deletar');
+      toast({
+        title: 'Erro ao deletar pessoa.',
+        description: err instanceof Error ? err.message : 'Erro desconhecido.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
-  if (isLoading) return <div className="text-center p-10">Carregando dados...</div>;
-  if (error) return <div className="text-center p-10 text-red-500">Erro: {error}</div>;
+  if (isLoading) {
+    return (
+      <Center p={10}>
+        <Spinner size="xl" color="blue.500" />
+        <Text ml={4}>Carregando dados...</Text>
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert status="error" p={10}>
+        <AlertIcon />
+        <Text>Erro: {error}</Text>
+      </Alert>
+    );
+  }
 
   return (
-    <>
+    <Box>
       {/* Botão Add Card */}
       <Flex justify="flex-end" mb={8}>
         <Button colorScheme="blue" onClick={() => setIsModalOpen(true)}>
-          Adicionar Novo Card
+          Adicionar Nova Pessoa
         </Button>
       </Flex>
 
@@ -119,22 +224,17 @@ export default function CardDashboard() {
       )}
 
       {/* Grid responsivo definitivo */}
-      <Box w="full">
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full"
-          suppressHydrationWarning
-        >
-          {cards.map(person => (
-            <Card
-              key={person.cpf}
-              person={person}
-              onToggleDownloaded={handleToggleDownloaded}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      </Box>
-    </>
+      <SimpleGrid columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} spacing={6}>
+        {cards.map(person => (
+          <Card
+            key={person.cpf} // Use CPF as key for now, consider using ID from DB later
+            person={person}
+            onToggleDownloaded={handleToggleDownloaded}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        ))}
+      </SimpleGrid>
+    </Box>
   );
 }

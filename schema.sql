@@ -13,3 +13,21 @@ CREATE TABLE people (
     downloaded BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE telefones (
+    id SERIAL PRIMARY KEY,
+    person_id INTEGER NOT NULL REFERENCES people(id) ON DELETE CASCADE,
+    numero VARCHAR(50) NOT NULL,
+    tipo VARCHAR(50)
+);
+
+CREATE TABLE enderecos (
+    id SERIAL PRIMARY KEY,
+    person_id INTEGER NOT NULL REFERENCES people(id) ON DELETE CASCADE,
+    logradouro VARCHAR(255) NOT NULL,
+    numero VARCHAR(50),
+    bairro VARCHAR(255),
+    cidade VARCHAR(255) NOT NULL,
+    uf VARCHAR(2) NOT NULL,
+    cep VARCHAR(10)
+);

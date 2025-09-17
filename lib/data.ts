@@ -1,4 +1,21 @@
+export type Telefone = {
+  id?: number; // Optional, for existing records
+  numero: string;
+  tipo?: string;
+};
+
+export type Endereco = {
+  id?: number; // Optional, for existing records
+  logradouro: string;
+  numero?: string;
+  bairro?: string;
+  cidade: string;
+  uf: string;
+  cep?: string;
+};
+
 export type Person = {
+  id?: number; // Add id for database records
   nome: string;
   cpf: string;
   parentesco: string;
@@ -6,7 +23,9 @@ export type Person = {
   nascimento?: string;
   profissao?: string;
   isPrincipal: boolean;
-  downloaded: boolean; // Novo campo
+  downloaded: boolean;
+  telefones?: Telefone[]; // New field
+  enderecos?: Endereco[]; // New field
 };
 
 export const clientData: Person[] = [
@@ -19,6 +38,20 @@ export const clientData: Person[] = [
     profissao: "Auxiliar nos serviços de alimentação",
     isPrincipal: true,
     downloaded: false,
+    telefones: [
+      { numero: "99999-9999", tipo: "celular" },
+      { numero: "8888-8888", tipo: "residencial" },
+    ],
+    enderecos: [
+      {
+        logradouro: "MARCILIO DIAS",
+        numero: "995",
+        bairro: "JULIAO RAMOS",
+        cidade: "MACAPA",
+        uf: "AP",
+        cep: "68908-200",
+      },
+    ],
   },
   {
     nome: "MARIA ROSA DO ROSARIO FERREIRA",
