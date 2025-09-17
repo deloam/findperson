@@ -21,7 +21,7 @@ export async function GET(
   }
 }
 
-// PUT - Atualizar pessoa pelo CP
+// PUT - Atualizar pessoa pelo CPF
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ cpf: string }> }
