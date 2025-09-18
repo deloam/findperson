@@ -51,7 +51,7 @@ export default function CardDashboard() {
       }
     };
     fetchCards();
-  }, []);
+  }, [toast]);
 
   const handleToggleDownloaded = async (cpf: string) => {
     const card = cards.find(c => c.cpf === cpf);
