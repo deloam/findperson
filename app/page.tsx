@@ -118,7 +118,7 @@ export default function HomePage() {
         {/* Footer Note */}
         <Box textAlign="center" pt={20} color="gray.600">
           <Text fontSize="sm">
-            Desenvolvido por Deloam & Joyce · Operação FindPerson 2025
+            Operação FindPerson Caroline Dejan · 2025
           </Text>
         </Box>
 
