@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, SimpleGrid, Heading, Text, Icon, VStack, HStack, Tag, Badge } from '@chakra-ui/react';
+import { Box, SimpleGrid, Heading, Text, Icon, VStack, HStack, Tag } from '@chakra-ui/react';
 import { FaDatabase, FaKey, FaTerminal, FaNetworkWired } from 'react-icons/fa';
 
 interface ToolCardProps {

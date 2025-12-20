@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Person, Telefone, Endereco } from '@/lib/data';
+import type { Person } from '@/lib/data';
 import {
   Box, Flex, Heading, Text, Badge, Checkbox, Divider, Button, List, ListItem, Icon,
   IconButton, Collapse, VStack
@@ -116,7 +116,7 @@ export default function Card({ person, onToggleDownloaded, onEdit, onDelete }: C
                     <ListItem key={index} display="flex" alignItems="flex-start">
                       <Icon as={FaMapMarkerAlt} mr={2} mt={1} color="gray.500" />
                       <Text>
-                        {end.logradouro}, {end.numero && `${end.numero} - `}{end.bairro}<br/>
+                        {end.logradouro}, {end.numero && `${end.numero} - `}{end.bairro}<br />
                         {end.cidade}/{end.uf} - {end.cep}
                       </Text>
                     </ListItem>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import type { Person, Telefone, Endereco } from '@/lib/data'; // Import Telefone and Endereco types
+import type { Person } from '@/lib/data'; // Import Telefone and Endereco types
 import {
   Modal,
   ModalOverlay,
@@ -17,8 +17,6 @@ import {
   Box,
   Checkbox,
   ModalCloseButton,
-  InputGroup,
-  InputLeftAddon,
   IconButton,
   HStack,
   VStack,
