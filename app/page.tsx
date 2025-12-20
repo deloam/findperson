@@ -1,6 +1,7 @@
 'use client';
 
 import { Container, Box, Heading, Text, VStack, Button, Divider, useColorModeValue } from "@chakra-ui/react";
+import Prologue from "@/app/components/Prologue";
 import StoryTimeline from "@/app/components/StoryTimeline";
 import DetectiveTools from "@/app/components/DetectiveTools";
 import PsychologicalProfile from "@/app/components/PsychologicalProfile";
@@ -67,6 +68,13 @@ export default function HomePage() {
 
       {/* Main Content */}
       <Container maxW="container.xl" px={{ base: 4, md: 8 }}>
+
+        {/* Prologue Section */}
+        <Box py={10}>
+          <Prologue />
+        </Box>
+
+        <Divider borderColor="gray.800" my={5} />
 
         {/* Timeline Section */}
         <Box id="timeline" py={16}>
