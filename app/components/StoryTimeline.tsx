@@ -20,14 +20,23 @@ const TimelineItem = ({ date, title, children, icon, isLeft = false }: TimelineI
     const color = useColorModeValue('gray.600', 'gray.300');
 
     return (
-        <Flex mb={10} justify={isLeft ? 'flex-end' : 'flex-start'} align="center" w="full" position="relative">
+        <Flex mb={10} direction={{ base: 'column', md: 'row' }} justify={{ base: 'center', md: isLeft ? 'flex-end' : 'flex-start' }} align="center" w="full" position="relative">
             {/* Date Desktop - Opposite Side */}
             <Box display={{ base: 'none', md: 'block' }} position="absolute" left={isLeft ? 'auto' : '50%'} right={isLeft ? '50%' : 'auto'} px={4} textAlign={isLeft ? 'left' : 'right'} w="50%">
                 <Text fontWeight="bold" fontSize="sm" color="blue.500">{date}</Text>
             </Box>
 
             {/* Line Indicator */}
-            <Circle size="40px" bg="blue.500" color="white" position="absolute" left="50%" transform="translateX(-50%)" zIndex={2}>
+            <Circle
+                size="40px"
+                bg="blue.500"
+                color="white"
+                position={{ base: 'relative', md: 'absolute' }}
+                left={{ base: 'auto', md: '50%' }}
+                transform={{ base: 'none', md: 'translateX(-50%)' }}
+                mb={{ base: 4, md: 0 }}
+                zIndex={2}
+            >
                 <Icon as={icon} />
             </Circle>
 
