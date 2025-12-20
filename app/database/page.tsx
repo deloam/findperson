@@ -1,3 +1,5 @@
+'use client';
+
 import CardDashboard from "@/app/components/CardDashboard";
 import { Container, Box, Heading, Text, Button } from "@chakra-ui/react";
 import Link from "next/link";
