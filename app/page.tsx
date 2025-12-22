@@ -8,8 +8,11 @@ import DetectiveTools from "@/app/components/DetectiveTools";
 import PsychologicalProfile from "@/app/components/PsychologicalProfile";
 import Link from "next/link";
 import { FaDatabase } from "react-icons/fa";
-import MagnifyingTitle from "@/app/components/MagnifyingTitle";
+// import MagnifyingTitle from "@/app/components/MagnifyingTitle";
+import dynamic from 'next/dynamic';
 import InvestigationConclusion from "@/app/components/InvestigationConclusion";
+
+const MagnifyingTitle = dynamic(() => import('@/app/components/MagnifyingTitle'), { ssr: false });
 
 export default function Home() {
   const bg = useColorModeValue('gray.900', 'gray.900');
