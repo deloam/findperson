@@ -1,16 +1,20 @@
 'use client';
 
-import { Container, Box, Heading, Text, VStack, Button, Divider, useColorModeValue } from "@chakra-ui/react";
+import { Container, Box, Heading, Text, VStack, Button, Divider, useColorModeValue, Modal, ModalOverlay, ModalContent, ModalBody, ModalCloseButton, Image } from "@chakra-ui/react";
+import { useState } from 'react';
 import Prologue from "@/app/components/Prologue";
 import StoryTimeline from "@/app/components/StoryTimeline";
 import DetectiveTools from "@/app/components/DetectiveTools";
 import PsychologicalProfile from "@/app/components/PsychologicalProfile";
 import Link from "next/link";
 import { FaDatabase } from "react-icons/fa";
+import MagnifyingTitle from "@/app/components/MagnifyingTitle";
+import InvestigationConclusion from "@/app/components/InvestigationConclusion";
 
-export default function HomePage() {
+export default function Home() {
   const bg = useColorModeValue('gray.900', 'gray.900');
   const textColor = useColorModeValue('white', 'white');
+  const [isInfographicZoomed, setIsInfographicZoomed] = useState(false);
 
   return (
     <Box bg={bg} minH="100vh" color={textColor} pb={20}>
@@ -36,17 +40,7 @@ export default function HomePage() {
 
         <Container maxW="container.lg" textAlign="center" zIndex={10}>
           <VStack spacing={6}>
-            <Heading
-              as="h1"
-              size="4xl"
-              fontWeight="black"
-              letterSpacing="tighter"
-              paddingBottom="10px"
-              bgGradient="linear(to-r, blue.400, purple.500)"
-              bgClip="text"
-            >
-              A CAÇADA A VERDADE
-            </Heading>
+            <MagnifyingTitle />
             <Text fontSize="xl" maxW="2xl" mx="auto" color="gray.400">
               A história real da investigação que desmascarou uma mentira de quatro anos.
             </Text>
@@ -86,6 +80,13 @@ export default function HomePage() {
 
         <Divider borderColor="gray.800" my={10} />
 
+        {/* Conclusion Section */}
+        <Box py={10}>
+          <InvestigationConclusion />
+        </Box>
+
+        <Divider borderColor="gray.800" my={10} />
+
         {/* Infographic Section */}
         <Box py={16} textAlign="center">
           <Heading size="2xl" mb={10} color="white">
@@ -99,6 +100,10 @@ export default function HomePage() {
             borderColor="gray.700"
             display="inline-block"
             boxShadow="2xl"
+            cursor="pointer"
+            onClick={() => setIsInfographicZoomed(true)}
+            transition="transform 0.2s"
+            _hover={{ transform: 'scale(1.02)' }}
           >
             <Box
               as="img"
@@ -110,6 +115,23 @@ export default function HomePage() {
             />
           </Box>
         </Box>
+
+        <Modal isOpen={isInfographicZoomed} onClose={() => setIsInfographicZoomed(false)} size="6xl" isCentered>
+          <ModalOverlay backdropFilter="blur(5px)" bg="blackAlpha.800" />
+          <ModalContent bg="transparent" boxShadow="none">
+            <ModalCloseButton color="white" zIndex={10} top={-10} right={-10} />
+            <ModalBody p={0} display="flex" justifyContent="center" alignItems="center" onClick={() => setIsInfographicZoomed(false)}>
+              <Image
+                src="/infografico.png"
+                alt="Infográfico da Investigação Zoom"
+                maxH="90vh"
+                width="auto"
+                objectFit="contain"
+                borderRadius="md"
+              />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
 
         <Divider borderColor="gray.800" my={10} />
 

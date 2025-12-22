@@ -21,11 +21,6 @@ const TimelineItem = ({ date, title, children, icon, isLeft = false }: TimelineI
 
     return (
         <Flex mb={10} direction={{ base: 'column', md: 'row' }} justify={{ base: 'center', md: isLeft ? 'flex-end' : 'flex-start' }} align="center" w="full" position="relative">
-            {/* Date Desktop - Opposite Side */}
-            <Box display={{ base: 'none', md: 'block' }} position="absolute" left={isLeft ? 'auto' : '50%'} right={isLeft ? '50%' : 'auto'} px={4} textAlign={isLeft ? 'left' : 'right'} w="50%">
-                <Text fontWeight="bold" fontSize="sm" color="blue.500">{date}</Text>
-            </Box>
-
             {/* Line Indicator */}
             <Circle
                 size="40px"
@@ -53,7 +48,7 @@ const TimelineItem = ({ date, title, children, icon, isLeft = false }: TimelineI
                 transition={{ duration: 0.5 }}
             >
                 <Box bg={bg} p={6} borderRadius="lg" shadow="lg" borderLeft="4px solid" borderLeftColor="blue.500" position="relative">
-                    <Text display={{ md: 'none' }} fontWeight="bold" fontSize="xs" color="blue.500" mb={2}>{date}</Text>
+                    <Text fontWeight="bold" fontSize="sm" color="blue.500" mb={1}>{date}</Text>
                     <Heading size="md" mb={2} color={useColorModeValue('gray.800', 'white')}>{title}</Heading>
                     <Box color={color} fontSize="sm">
                         {children}
@@ -93,8 +88,15 @@ export default function StoryTimeline() {
             <Box position="absolute" left="50%" top={0} bottom={0} w="2px" bg="gray.200" transform="translateX(-50%)" zIndex={0} />
 
             <VStack spacing={0} w="full">
+                <TimelineItem date="30 de Outubro de 2024" title="O Início da Caçada" icon={FaUsers} isLeft={false}>
+                    <Text mb={3}>Depois de muito tempo conversando apenas por texto com &quot;Karoline Dejan&quot;, alguns amigos se organizaram e decidiram buscar a verdade sobre quem realmente ela era.</Text>
+                    <Text mb={3}>Criação do grupo com intuito de descobrir quem está por trás do fake.</Text>
+                    <TimelineImage src="/foto do grupo.png" alt="Foto do Grupo" />
+                </TimelineItem>
+
                 <TimelineItem date="14 de Julho de 2025" title="A Queda da Máscara Inicial" icon={FaUserSecret} isLeft={true}>
-                    <Text mb={3}>Joyce descobre que &quot;Karoline Dejan&quot; usava fotos de uma tiktoker (Marcela). Através de uma edição de um &quot;álbum de figurinhas&quot; que foi enviado via email para Deloam a identidade de &quot;Izabela&quot; começou a ser descoberta.</Text>
+                    <Text mb={3}>Joyce descobre que &quot;Karoline Dejan&quot; usava fotos de uma tiktoker (Marcela).</Text>
+                    <Text mb={3}>🕵🏼‍♂️ Através de uma edição de um &quot;álbum de figurinhas&quot; que foi enviado via email para Deloam a identidade de &quot;Izabela&quot; começou a ser descoberta.</Text>
                     <SimpleGrid columns={{ base: 2, md: 3 }} spacing={2}>
                         <TimelineImage src="/fotos%20usadas/WhatsApp%20Image%202025-12-19%20at%208.02.12%20PM.jpeg" alt="Foto Usada 1" />
                         <TimelineImage src="/fotos%20usadas/WhatsApp%20Image%202025-12-19%20at%208.02.12%20PM%20(1).jpeg" alt="Foto Usada 2" />
@@ -110,10 +112,8 @@ export default function StoryTimeline() {
 
                 <TimelineItem date="12 de Setembro de 2025" title="O Pulo do Gato (Brecha de Dados)" icon={FaFingerprint} isLeft={false}>
                     <Text fontWeight="bold">O dia mais produtivo.</Text>
-                    <Text>Investimento de R$ 36,00 no painel Vex.</Text>
-                    <Text mt={2}>🎯 <Text as="span" fontWeight="bold">Identidade Revelada:</Text> Eduardo Ferreira dos Santos.</Text>
-                    <Text>📍 <Text as="span" fontWeight="bold">Endereços:</Text> Bairros Julião Ramos e Pantanal (Macapá/AP).</Text>
-                    <Text mt={1} fontSize="xs" color="gray.500" mb={3}>Confirmação via CPF da mãe (Raimunda Helena) em bairros Central, Pacoval e São Lázaro.</Text>
+                    <Text>Com o email que Carol/Izabela enviou foi possível conectar Carol/Izabela a uma pessoa, Eduardo Ferreira dos Santos, pois ele usava esse email como chave Pix pessoal.</Text>
+                    <Text mt={2} mb={3}>🎯 <Text as="span" fontWeight="bold">Identidade Revelada:</Text> Eduardo Ferreira dos Santos.</Text>
                     <SimpleGrid columns={2} spacing={2}>
                         <TimelineImage src="/tela%20do%20pix%20do%20eduardo%20pelo%20email%20.jpeg" alt="Pix Email" />
                         <TimelineImage src="/tela%20pix%20usando%20o%20cpf%20como%20chave.jpeg" alt="Pix CPF" />
@@ -123,20 +123,35 @@ export default function StoryTimeline() {
                 <TimelineItem date="Estratégia Técnica" title="A Pesca Digital (IP Tracking)" icon={FaMapMarkerAlt} isLeft={true}>
                     <Text fontStyle="italic" mb={2}>&quot;Como uma pesca digital: lançou o anzol e Eduardo mordeu a isca.&quot;</Text>
                     <Text>Deloam enviou links de &quot;isca&quot; (formulários) que Eduardo acessou duas vezes.</Text>
-                    <Text mt={2}>📡 <Text as="span" fontWeight="bold">Provedor:</Text> Hostload (Wi-Fi residencial) e Vivo.</Text>
-                    <Text mb={3}>🗺️ <Text as="span" fontWeight="bold">Geolocalização:</Text> Confirmou Macapá/AP, invalidando a tese do Sudeste.</Text>
+                    <Text mt={2}>📡 <Text as="span" fontWeight="bold">Provedor:</Text> Você Telecom (Wi-Fi residencial) e Vivo como internet móvel.</Text>
+                    <Text mb={3}>🗺️ <Text as="span" fontWeight="bold">Geolocalização:</Text> Confirmou Macapá/AP, invalidando a tese que é uma pessoa do Sudeste ou Uruguai.</Text>
                     <TimelineImage src="/foto%20do%20IP%20que%20motra%20que%20ele%20mora%20em%20macapá.jpeg" alt="Rastreio IP" />
                 </TimelineItem>
 
                 <TimelineItem date="13 a 16 de Setembro" title="Mais Sobre Eduardo" icon={FaSearch} isLeft={true}>
-                    <Text mt={2}>Descobrem o &quot;hiperfoco&quot; em genealogia e Família Real.</Text>
-                    <Text>Rastros de chip vinculado a terceiro (Klecio William).</Text>
+                    <Text mb={2}>Até aqui não tínhamos um rosto e era o que faltava na nossa caçada.</Text>
+                    <Text mt={2} mb={2}>Descobrem o &quot;hiperfoco&quot; em genealogia e Família Real.</Text>
+                    <TimelineImage src="/hiperfoco.jpeg" alt="Hiperfoco em Genealogia" />
+                    <Text mb={2} mt={4}>O atual número de whatsapp (2024 a 2025) está no nome de terceiros (Klecio William) que nada tem a ver com Eduardo.</Text>
+                    <Text mb={3}> Foto do endereço atual dele: Av. Marcílio Dias, 995 - Julião Ramos - Macapá - AP.</Text>
+                    <TimelineImage src="/foto do endereço.jpeg" alt="Foto do endereço atual de Eduardo" />
+                    <Box mt={4} w="full" h="450px" borderRadius="xl" overflow="hidden" boxShadow="md" border="1px solid" borderColor="whiteAlpha.200">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!4v1766434115232!6m8!1m7!1sTyiS82i1BZ6BLxPg67bBuA!2m2!1d0.05069409783892826!2d-51.05857998696101!3f210.25252151790812!4f-2.8530010823492518!5f0.7820865974627469"
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                        />
+                    </Box>
                 </TimelineItem>
 
                 <TimelineItem date="19 de Setembro de 2025" title="A Prova Final (O Rosto)" icon={FaIdCard} isLeft={false}>
-                    <Text>Deloam encontra o perfil da tia, Rosineide.</Text>
-                    <Text mt={2} fontStyle="italic">&quot;MENTIRA! VSF!&quot; - Reação de Joyce ao ver a foto de Eduardo criança.</Text>
-                    <Text mb={3}>Confirmação do padrão de mentira sobre a idade.</Text>
+                    <Text>Deloam encontra o perfil da tia, Rosineide e com assim pesquisando o nome eduardo nos amigos, encontra ele finalmente, temos um rosto.</Text>
+                    <Text mt={2} mb={3} fontStyle="italic">&quot;MENTIRA! VSF!&quot; - Reação de Joyce ao ver a foto de Eduardo criança.</Text>
+                    <Text mb={3}>Confirmação da idade e da data de nascimento também no perfil do Facebook, além do jeito de se expressar quando alguém dúvida de uma mentira que ele conta.</Text>
                     <SimpleGrid columns={{ base: 2, md: 3 }} spacing={2}>
                         <TimelineImage src="/fotos%20reais%20do%20eduardo/WhatsApp%20Image%202025-12-19%20at%208.02.11%20PM.jpeg" alt="Eduardo Real 1" />
                         <TimelineImage src="/fotos%20reais%20do%20eduardo/WhatsApp%20Image%202025-12-19%20at%208.02.11%20PM%20(1).jpeg" alt="Eduardo Real 2" />
