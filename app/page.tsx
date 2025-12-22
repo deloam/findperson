@@ -11,6 +11,7 @@ import { FaDatabase } from "react-icons/fa";
 // import MagnifyingTitle from "@/app/components/MagnifyingTitle";
 import dynamic from 'next/dynamic';
 import InvestigationConclusion from "@/app/components/InvestigationConclusion";
+import StickyNav from "@/app/components/StickyNav";
 
 const MagnifyingTitle = dynamic(() => import('@/app/components/MagnifyingTitle'), { ssr: false });
 
@@ -67,7 +68,7 @@ export default function Home() {
       <Container maxW="container.xl" px={{ base: 4, md: 8 }}>
 
         {/* Prologue Section */}
-        <Box py={10}>
+        <Box id="prologue" py={10}>
           <Prologue />
         </Box>
 
@@ -84,14 +85,14 @@ export default function Home() {
         <Divider borderColor="gray.800" my={10} />
 
         {/* Conclusion Section */}
-        <Box py={10}>
+        <Box id="conclusion" py={10}>
           <InvestigationConclusion />
         </Box>
 
         <Divider borderColor="gray.800" my={10} />
 
         {/* Infographic Section */}
-        <Box py={16} textAlign="center">
+        <Box id="map" py={16} textAlign="center">
           <Heading size="2xl" mb={10} color="white">
             Mapa da Investigação
           </Heading>
@@ -139,12 +140,12 @@ export default function Home() {
         <Divider borderColor="gray.800" my={10} />
 
         {/* Tools Section */}
-        <Box py={10}>
+        <Box id="tools" py={10}>
           <DetectiveTools />
         </Box>
 
         {/* Profile Section */}
-        <Box py={10}>
+        <Box id="profile" py={10}>
           <PsychologicalProfile />
         </Box>
 
@@ -156,6 +157,7 @@ export default function Home() {
         </Box>
 
       </Container>
+      <StickyNav />
     </Box >
   );
 }

@@ -3,6 +3,8 @@
 import { Box, Heading, Text, VStack, List, ListItem, ListIcon, Divider, useColorModeValue, Icon } from '@chakra-ui/react';
 import { FaFingerprint, FaMapMarkedAlt, FaBrain, FaUserFriends, FaCheckCircle } from 'react-icons/fa';
 
+import TypewriterText from './TypewriterText';
+
 export default function Prologue() {
     const textColor = useColorModeValue('gray.300', 'gray.300');
     const headingColor = useColorModeValue('white', 'white');
@@ -14,9 +16,16 @@ export default function Prologue() {
 
                 {/* Main Title Section */}
                 <Box textAlign="center" mb={6}>
-                    <Heading as="h2" size="xl" color={headingColor} mb={4}>
-                        Deloam & Joyce: Como Dois Amigos Desmascaram um Catfish
-                    </Heading>
+                    <TypewriterText
+                        text="Deloam & Joyce: Como Dois Amigos Desmascaram um Catfish"
+                        as="h2"
+                        fontSize={{ base: "2xl", md: "3xl" }}
+                        fontWeight="bold"
+                        color={headingColor}
+                        mb={4}
+                        speed={40}
+                        cursorColor="blue.500"
+                    />
                     <Text fontSize="lg" color={textColor} lineHeight="tall">
                         No teatro de identidades que é a internet, todos nós somos, em algum grau, atores e audiência.
                         A dúvida sobre quem está do outro lado da tela é uma constante antropológica da nossa era, um eco da curiosidade e do receio que definem as interações humanas em espaços virtuais.
