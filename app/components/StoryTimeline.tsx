@@ -4,6 +4,7 @@ import { Box, VStack, Heading, Text, Flex, Icon, Circle, useColorModeValue, Imag
 import { FaFingerprint, FaUserSecret, FaSearch, FaIdCard, FaMapMarkerAlt, FaUsers, FaCrown, FaMobileAlt, FaFacebook } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 const MotionBox = motion.create(Box);
 
@@ -96,7 +97,7 @@ export default function StoryTimeline() {
 
                 <TimelineItem date="14 de Julho de 2025" title="A Queda da Máscara Inicial" icon={FaUserSecret} isLeft={true}>
                     <Text mb={3}>Joyce descobre que &quot;Karoline Dejan&quot; usava fotos de uma tiktoker (Marcela).</Text>
-                    <Text mb={3}>🕵🏼‍♂️ Através de uma edição de um &quot;álbum de figurinhas&quot; que foi enviado via email para Deloam a identidade de &quot;Izabela&quot; começou a ser descoberta.</Text>
+                    <Text mb={3}>🕵🏼‍♂️ Através de uma edição de um &quot;álbum de figurinhas&quot; que foi enviado via email para Deloam a identidade de &quot;Carol&quot; começou a ser descoberta.</Text>
                     <SimpleGrid columns={{ base: 2, md: 3 }} spacing={2}>
                         <TimelineImage src="/fotos%20usadas/WhatsApp%20Image%202025-12-19%20at%208.02.12%20PM.jpeg" alt="Foto Usada 1" />
                         <TimelineImage src="/fotos%20usadas/WhatsApp%20Image%202025-12-19%20at%208.02.12%20PM%20(1).jpeg" alt="Foto Usada 2" />
@@ -112,7 +113,7 @@ export default function StoryTimeline() {
 
                 <TimelineItem date="12 de Setembro de 2025" title="O Pulo do Gato (Brecha de Dados)" icon={FaFingerprint} isLeft={false}>
                     <Text fontWeight="bold">O dia mais produtivo.</Text>
-                    <Text>Com o email que Carol/Izabela enviou foi possível conectar Carol/Izabela a uma pessoa, Eduardo Ferreira dos Santos, pois ele usava esse email como chave Pix pessoal.</Text>
+                    <Text>Com o email que Carol/Izabela enviou, foi possível conectá-la a uma pessoa, Eduardo Ferreira dos Santos, pois ela usava esse email como chave Pix pessoal.</Text>
                     <Text mt={2} mb={3}>🎯 <Text as="span" fontWeight="bold">Identidade Revelada:</Text> Eduardo Ferreira dos Santos.</Text>
                     <SimpleGrid columns={2} spacing={2}>
                         <TimelineImage src="/tela%20do%20pix%20do%20eduardo%20pelo%20email%20.jpeg" alt="Pix Email" />
@@ -129,7 +130,7 @@ export default function StoryTimeline() {
                 </TimelineItem>
 
                 <TimelineItem date="13 a 16 de Setembro" title="Mais Sobre Eduardo" icon={FaSearch} isLeft={true}>
-                    <Text mb={2}>Até aqui não tínhamos um rosto e era o que faltava na nossa caçada.</Text>
+                    <Text mb={2}>Até aqui não tínhamos um rosto e era o que faltava na caçada.</Text>
                     <Text mt={2} mb={2}>Descobrem o &quot;hiperfoco&quot; em genealogia e Família Real.</Text>
                     <TimelineImage src="/hiperfoco.jpeg" alt="Hiperfoco em Genealogia" />
                     <Text mb={2} mt={4}>O atual número de whatsapp (2024 a 2025) está no nome de terceiros (Klecio William) que nada tem a ver com Eduardo.</Text>
@@ -149,7 +150,7 @@ export default function StoryTimeline() {
                 </TimelineItem>
 
                 <TimelineItem date="19 de Setembro de 2025" title="A Prova Final (O Rosto)" icon={FaIdCard} isLeft={false}>
-                    <Text>Deloam encontra o perfil da tia, Rosineide e com assim pesquisando o nome eduardo nos amigos, encontra ele finalmente, temos um rosto.</Text>
+                    <Text>Deloam encontra o perfil da tia, Rosineide, pesquisando o nome eduardo nos amigos, encontram finalmente ele, temos um rosto!</Text>
                     <Text mt={2} mb={3} fontStyle="italic">&quot;MENTIRA! VSF!&quot; - Reação de Joyce ao ver a foto de Eduardo criança.</Text>
                     <Text mb={3}>Confirmação da idade e da data de nascimento também no perfil do Facebook, além do jeito de se expressar quando alguém dúvida de uma mentira que ele conta.</Text>
                     <SimpleGrid columns={{ base: 2, md: 3 }} spacing={2}>
@@ -207,20 +208,33 @@ export default function StoryTimeline() {
                 </TimelineItem>
             </VStack>
 
-            <Modal isOpen={!!selectedImage} onClose={handleClose} size="4xl" isCentered>
-                <ModalOverlay backdropFilter="blur(5px)" bg="blackAlpha.800" />
-                <ModalContent bg="transparent" boxShadow="none">
-                    <ModalCloseButton color="white" zIndex={10} />
-                    <ModalBody p={0} display="flex" justifyContent="center" alignItems="center" onClick={handleClose}>
+            <Modal isOpen={!!selectedImage} onClose={handleClose} size="full" isCentered motionPreset="scale">
+                <ModalOverlay backdropFilter="blur(10px)" bg="blackAlpha.900" />
+                <ModalContent bg="transparent" boxShadow="none" my={0}>
+                    <ModalCloseButton color="white" zIndex={20} size="lg" position="fixed" top={4} right={4} bg="blackAlpha.400" borderRadius="full" />
+                    <ModalBody p={0} display="flex" justifyContent="center" alignItems="center" h="100vh" w="100vw" overflow="hidden">
                         {selectedImage && (
-                            <Image
-                                src={selectedImage}
-                                alt="Zoomed Image"
-                                maxH="90vh"
-                                objectFit="contain"
-                                borderRadius="md"
-                                cursor="pointer"
-                            />
+                            <TransformWrapper
+                                initialScale={1}
+                                minScale={0.5}
+                                maxScale={4}
+                                centerOnInit
+                                wheel={{ step: 0.2 }}
+                            >
+                                <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }} contentStyle={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                    <Image
+                                        src={selectedImage}
+                                        alt="Zoomed Image"
+                                        maxH="95vh"
+                                        maxW="95vw"
+                                        objectFit="contain"
+                                        borderRadius="md"
+                                        cursor="grab"
+                                        boxShadow="2xl"
+                                        _active={{ cursor: "grabbing" }}
+                                    />
+                                </TransformComponent>
+                            </TransformWrapper>
                         )}
                     </ModalBody>
                 </ModalContent>
